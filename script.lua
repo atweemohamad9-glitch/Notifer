@@ -1,6 +1,4 @@
--- WNotifier Exact Clone (10s Scan Delay / Auto Server-Hop Engine)
--- Keyless, Universal Base Scanner & Auto Teleport
-
+-- WNotifier Advanced Engine (Brainrot + User + Value + Auto Join)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
@@ -11,7 +9,6 @@ if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
     CoreGui.WNotifierPrivateEngine:Destroy()
 end
 
--- Rares Whitelist Database
 local WhitelistData = {
     ["Headless Horseman"] = true,
     ["John Pork"] = true,
@@ -25,7 +22,6 @@ local WhitelistData = {
 }
 
 local AutoJoinEnabled = true
-local OGJoinEnabled = true
 local FoundRareInServer = false
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -86,49 +82,9 @@ LogsContainer.Position = UDim2.new(0, 112, 0, 30)
 LogsContainer.BackgroundTransparency = 1
 LogsContainer.Parent = MainFrame
 
-local WhitelistScroll = Instance.new("ScrollingFrame")
-WhitelistScroll.Size = UDim2.new(1, -115, 1, -33)
-WhitelistScroll.Position = UDim2.new(0, 112, 0, 30)
-WhitelistScroll.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
-WhitelistScroll.BorderSizePixel = 0
-WhitelistScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-WhitelistScroll.ScrollBarThickness = 4
-WhitelistScroll.Visible = false
-WhitelistScroll.Parent = MainFrame
-
-local ListLayoutWL = Instance.new("UIListLayout")
-ListLayoutWL.SortOrder = Enum.SortOrder.LayoutOrder
-ListLayoutWL.Padding = UDim.new(0, 4)
-ListLayoutWL.Parent = WhitelistScroll
-
-local ActionBar = Instance.new("Frame")
-ActionBar.Size = UDim2.new(1, 0, 0, 26)
-ActionBar.BackgroundTransparency = 1
-ActionBar.Parent = LogsContainer
-
-local OgBtn = Instance.new("TextButton")
-OgBtn.Size = UDim2.new(0, 95, 0, 22)
-OgBtn.Position = UDim2.new(1, -285, 0, 2)
-OgBtn.BackgroundColor3 = Color3.fromRGB(241, 196, 15)
-OgBtn.Font = Enum.Font.SourceSansBold
-OgBtn.TextSize = 11
-OgBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-OgBtn.Text = "★ OG-join: ON"
-OgBtn.Parent = ActionBar
-
-local AutoBtn = Instance.new("TextButton")
-AutoBtn.Size = UDim2.new(0, 95, 0, 22)
-AutoBtn.Position = UDim2.new(1, -185, 0, 2)
-AutoBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
-AutoBtn.Font = Enum.Font.SourceSansBold
-AutoBtn.TextSize = 11
-AutoBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-AutoBtn.Text = "● Auto-join: ON"
-AutoBtn.Parent = ActionBar
-
 local LogsScroll = Instance.new("ScrollingFrame")
-LogsScroll.Size = UDim2.new(1, -5, 1, -30)
-LogsScroll.Position = UDim2.new(0, 0, 0, 30)
+LogsScroll.Size = UDim2.new(1, -5, 1, -10)
+LogsScroll.Position = UDim2.new(0, 0, 0, 5)
 LogsScroll.BackgroundColor3 = Color3.fromRGB(18, 20, 25)
 LogsScroll.BorderSizePixel = 0
 LogsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -137,18 +93,8 @@ LogsScroll.Parent = LogsContainer
 
 local ListLayoutLogs = Instance.new("UIListLayout")
 ListLayoutLogs.SortOrder = Enum.SortOrder.LayoutOrder
-ListLayoutLogs.Padding = UDim.new(0, 2)
+ListLayoutLogs.Padding = UDim.new(0, 4)
 ListLayoutLogs.Parent = LogsScroll
-
-local function switchTab(tabName)
-    if tabName == "Logs" then
-        LogsContainer.Visible = true
-        WhitelistScroll.Visible = false
-    elseif tabName == "Whitelist" then
-        LogsContainer.Visible = false
-        WhitelistScroll.Visible = true
-    end
-end
 
 local categories = {"Logs", "Whitelist", "Owners", "Settings", "Users"}
 for i, cat in ipairs(categories) do
@@ -162,46 +108,8 @@ for i, cat in ipairs(categories) do
     Btn.TextColor3 = Color3.fromRGB(180, 180, 180)
     Btn.Text = cat
     Btn.Parent = SideBar
-    Btn.MouseButton1Click:Connect(function() switchTab(cat) end)
 end
 
-for name, status in pairs(WhitelistData) do
-    local Entry = Instance.new("Frame")
-    Entry.Size = UDim2.new(1, -6, 0, 28)
-    Entry.BackgroundColor3 = Color3.fromRGB(25, 28, 36)
-    Entry.BorderSizePixel = 0
-    Entry.Parent = WhitelistScroll
-
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -70, 1, 0)
-    Label.Position = UDim2.new(0, 10, 0, 0)
-    Label.BackgroundTransparency = 1
-    Label.Font = Enum.Font.SourceSans
-    Label.TextSize = 12
-    Label.TextColor3 = Color3.fromRGB(230, 230, 230)
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Text = name
-    Label.Parent = Entry
-
-    local Toggle = Instance.new("TextButton")
-    Toggle.Size = UDim2.new(0, 50, 0, 20)
-    Toggle.Position = UDim2.new(1, -55, 0, 4)
-    Toggle.BackgroundColor3 = status and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
-    Toggle.Font = Enum.Font.SourceSansBold
-    Toggle.TextSize = 11
-    Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Toggle.Text = status and "ON" or "OFF"
-    Toggle.Parent = Entry
-
-    Toggle.MouseButton1Click:Connect(function()
-        WhitelistData[name] = not WhitelistData[name]
-        Toggle.Text = WhitelistData[name] and "ON" or "OFF"
-        Toggle.BackgroundColor3 = WhitelistData[name] and Color3.fromRGB(46, 204, 113) or Color3.fromRGB(231, 76, 60)
-    end)
-end
-WhitelistScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutWL.AbsoluteContentSize.Y + 10)
-
--- In-Server Teleport Function
 local function teleportToPlayer(targetPlayer)
     if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -211,7 +119,6 @@ local function teleportToPlayer(targetPlayer)
     end
 end
 
--- Automatic Server Hop Function
 local function serverHop()
     StatusLabel.Text = "Server Hop..."
     StatusLabel.TextColor3 = Color3.fromRGB(231, 76, 60)
@@ -238,56 +145,38 @@ end
 
 local loggedEntries = {}
 
-local function addLogEntry(brainrotName, valueStr, playerName, targetPlayer)
+-- دالة طباعة المعلومات التفصيلية (Brainrot + Value + User + Joining status)
+local function addLogEntry(brainrotName, valStr, playerName, targetPlayer)
     local key = playerName .. "_" .. brainrotName
     if loggedEntries[key] then return end
     loggedEntries[key] = true
 
     local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1, 0, 0, 26)
-    Row.BackgroundColor3 = Color3.fromRGB(23, 26, 33)
+    Row.Size = UDim2.new(1, -5, 0, 28)
+    Row.BackgroundColor3 = Color3.fromRGB(25, 28, 36)
     Row.BorderSizePixel = 0
     Row.Parent = LogsScroll
 
-    local NameLbl = Instance.new("TextLabel")
-    NameLbl.Size = UDim2.new(0, 160, 1, 0)
-    NameLbl.Position = UDim2.new(0, 10, 0, 0)
-    NameLbl.BackgroundTransparency = 1
-    NameLbl.Font = Enum.Font.SourceSans
-    NameLbl.TextSize = 11
-    NameLbl.TextColor3 = Color3.fromRGB(220, 220, 220)
-    NameLbl.TextXAlignment = Enum.TextXAlignment.Left
-    NameLbl.Text = brainrotName
-    NameLbl.Parent = Row
-
-    local ValLbl = Instance.new("TextLabel")
-    ValLbl.Size = UDim2.new(0, 80, 1, 0)
-    ValLbl.Position = UDim2.new(0, 180, 0, 0)
-    ValLbl.BackgroundTransparency = 1
-    ValLbl.Font = Enum.Font.SourceSans
-    ValLbl.TextSize = 11
-    ValLbl.TextColor3 = Color3.fromRGB(46, 204, 113)
-    ValLbl.Text = valueStr
-    ValLbl.Parent = Row
-
-    local UserLbl = Instance.new("TextLabel")
-    UserLbl.Size = UDim2.new(0, 100, 1, 0)
-    UserLbl.Position = UDim2.new(0, 270, 0, 0)
-    UserLbl.BackgroundTransparency = 1
-    UserLbl.Font = Enum.Font.SourceSans
-    UserLbl.TextSize = 11
-    UserLbl.TextColor3 = Color3.fromRGB(150, 150, 150)
-    UserLbl.Text = "@" .. playerName
-    UserLbl.Parent = Row
+    local InfoLbl = Instance.new("TextLabel")
+    InfoLbl.Size = UDim2.new(1, -75, 1, 0)
+    InfoLbl.Position = UDim2.new(0, 8, 0, 0)
+    InfoLbl.BackgroundTransparency = 1
+    InfoLbl.Font = Enum.Font.SourceSansBold
+    InfoLbl.TextSize = 11
+    InfoLbl.TextColor3 = Color3.fromRGB(220, 220, 220)
+    InfoLbl.TextXAlignment = Enum.TextXAlignment.Left
+    -- إظهار الاسم + القيمة/السعر + اليوزر
+    InfoLbl.Text = "🔥 " .. brainrotName .. " (" .. valStr .. ") | @" .. playerName
+    InfoLbl.Parent = Row
 
     local JoinBtn = Instance.new("TextButton")
-    JoinBtn.Size = UDim2.new(0, 48, 0, 18)
-    JoinBtn.Position = UDim2.new(1, -55, 0, 4)
-    JoinBtn.BackgroundColor3 = Color3.fromRGB(52, 152, 219)
+    JoinBtn.Size = UDim2.new(0, 60, 0, 20)
+    JoinBtn.Position = UDim2.new(1, -65, 0, 4)
+    JoinBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
     JoinBtn.Font = Enum.Font.SourceSansBold
     JoinBtn.TextSize = 10
     JoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    JoinBtn.Text = "JOIN"
+    JoinBtn.Text = "JOINING..."
     JoinBtn.Parent = Row
 
     JoinBtn.MouseButton1Click:Connect(function()
@@ -297,7 +186,7 @@ local function addLogEntry(brainrotName, valueStr, playerName, targetPlayer)
     LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
 end
 
--- Engine (10-Second Scan Phase)
+-- فحص السيرفر والـ Base والأغراض
 task.spawn(function()
     for i = 10, 1, -1 do
         StatusLabel.Text = "Reading Server (" .. i .. "s)..."
@@ -306,10 +195,17 @@ task.spawn(function()
             if p ~= LocalPlayer then
                 if p.Character then
                     for _, obj in ipairs(p.Character:GetDescendants()) do
-                        if WhitelistData[obj.Name] == true then
+                        -- إذا وجد Brainrot بالـ Whitelist أو بالـ Base
+                        if WhitelistData[obj.Name] == true or obj:FindFirstChild("Money") or obj:FindFirstChild("Value") then
+                            local rareName = WhitelistData[obj.Name] and obj.Name or obj.Name
+                            local moneyValue = obj:FindFirstChild("Value") and tostring(obj.Value.Value) or (obj:FindFirstChild("Money") and tostring(obj.Money.Value) or "Secret")
+                            
                             FoundRareInServer = true
-                            addLogEntry(obj.Name, "FOUND IN BASE", p.Name, p)
+                            addLogEntry(rareName, moneyValue, p.Name, p)
+                            
                             if AutoJoinEnabled then
+                                StatusLabel.Text = "Joining Target..."
+                                StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
                                 teleportToPlayer(p)
                             end
                         end
@@ -325,8 +221,5 @@ task.spawn(function()
         StatusLabel.Text = "No Rares -> Hopping..."
         task.wait(1)
         serverHop()
-    else
-        StatusLabel.Text = "Live (Rare Target Found!)"
-        StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
     end
 end)
