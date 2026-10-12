@@ -1,9 +1,9 @@
--- WNotifier Ultimate Alert Engine (Optimized Whitelist for Rare Fuse Brainrots)
+-- WNotifier Cross-Server Auto-Joiner & Sniper (Pure English Code)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local Workspace = game:GetService("Workspace")
-local StarterGui = game:GetService("StarterGui")
-local SoundService = game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
 
 if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
@@ -11,7 +11,7 @@ if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
 end
 
 local WhitelistData = {
-    -- Best Fuse Brainrots & High Rarity Secrets
+    -- Rare Secrets & Fuse Targets
     ["Garama and Madundung"] = true,
     ["Garama"] = true,
     ["Madundung"] = true,
@@ -41,16 +41,13 @@ local WhitelistData = {
     ["Waverider"] = true,
     ["Pizza And Ranch"] = true,
 
-    -- Classic OGs & Secrets
+    -- OG Classics
     ["Headless Horseman"] = true,
     ["John Pork"] = true,
     ["Meowl"] = true,
     ["Skibidi Toilet"] = true,
     ["Strawberry Elephant"] = true,
-    ["Spyder Elephant"] = true,
-    ["Brainrot"] = true,
-    ["Secret"] = true,
-    ["OG"] = true
+    ["Spyder Elephant"] = true
 }
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -78,7 +75,7 @@ TopWindow.BorderSizePixel = 0
 TopWindow.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
-Title.Text = "🔔 WNotifier REALTIME NOTIFIER (Fuse Ready)"
+Title.Text = "⚡ WNotifier CROSS-SERVER SNIPER"
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 13
 Title.TextColor3 = Color3.fromRGB(46, 204, 113)
@@ -89,7 +86,7 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
 
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Text = "Listening for Fuse Secrets/OG..."
+StatusLabel.Text = "Scanning Current Server..."
 StatusLabel.Font = Enum.Font.SourceSans
 StatusLabel.TextSize = 11
 StatusLabel.TextColor3 = Color3.fromRGB(241, 196, 15)
@@ -113,117 +110,70 @@ ListLayoutLogs.SortOrder = Enum.SortOrder.LayoutOrder
 ListLayoutLogs.Padding = UDim.new(0, 3)
 ListLayoutLogs.Parent = LogsScroll
 
-local function playAlertSound()
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://4590662766"
-    sound.Volume = 2
-    sound.Parent = SoundService
-    sound:Play()
-    sound.Ended:Connect(function() sound:Destroy() end)
-end
+local function serverHop()
+    StatusLabel.Text = "No Rares -> Server Hopping..."
+    StatusLabel.TextColor3 = Color3.fromRGB(231, 76, 60)
+    
+    local placeId = game.PlaceId
+    local servers = {}
+    local req = request or http_request or (syn and syn.request)
+    
+    if req then
+        local res = req({Url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"})
+        local body = HttpService:JSONDecode(res.Body)
+        if body and body.data then
+            for _, s in ipairs(body.data) do
+                if s.id ~= game.JobId and s.playing < s.maxPlayers then
+                    table.insert(servers, s.id)
+                end
+            end
+        end
+    end
 
-local function teleportToPosition(cframe)
-    local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-        myChar.HumanoidRootPart.Velocity = Vector3.zero
-        myChar.HumanoidRootPart.CFrame = cframe * CFrame.new(0, 3, 0)
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
+    else
+        TeleportService:Teleport(placeId, LocalPlayer)
     end
 end
 
-local loggedEntries = {}
+local foundTargetInServer = false
 
-local function notifyUser(brainrotName, valStr, playerName, targetCFrame)
-    local key = playerName .. "_" .. brainrotName
-    if loggedEntries[key] then return end
-    loggedEntries[key] = true
-
-    playAlertSound()
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = "🚨 HIGH VALUE BRAINROT FOUND!",
-            Text = brainrotName .. " (" .. valStr .. ") | Owner: " .. playerName,
-            Duration = 6
-        })
-    end)
-
-    StatusLabel.Text = "FOUND: " .. brainrotName
-    StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
-
-    local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1, 0, 0, 30)
-    Row.BackgroundColor3 = Color3.fromRGB(24, 28, 38)
-    Row.BorderSizePixel = 0
-    Row.Parent = LogsScroll
-
-    local InfoLbl = Instance.new("TextLabel")
-    InfoLbl.Size = UDim2.new(1, -75, 1, 0)
-    InfoLbl.Position = UDim2.new(0, 8, 0, 0)
-    InfoLbl.BackgroundTransparency = 1
-    InfoLbl.Font = Enum.Font.SourceSansBold
-    InfoLbl.TextSize = 11
-    InfoLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    InfoLbl.TextXAlignment = Enum.TextXAlignment.Left
-    InfoLbl.Text = "🔥 " .. brainrotName .. " (" .. valStr .. ") | @" .. playerName
-    InfoLbl.Parent = Row
-
-    local JoinBtn = Instance.new("TextButton")
-    JoinBtn.Size = UDim2.new(0, 65, 0, 22)
-    JoinBtn.Position = UDim2.new(1, -70, 0, 4)
-    JoinBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
-    JoinBtn.Font = Enum.Font.SourceSansBold
-    JoinBtn.TextSize = 10
-    JoinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    JoinBtn.Text = "TELEPORT"
-    JoinBtn.Parent = Row
-
-    JoinBtn.MouseButton1Click:Connect(function()
-        if targetCFrame then teleportToPosition(targetCFrame) end
-    end)
-
-    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
-end
-
-local function checkObject(v)
-    local vNameLower = string.lower(v.Name)
-    for name, isWhitelisted in pairs(WhitelistData) do
-        if isWhitelisted then
-            local nameLower = string.lower(name)
-            if string.find(vNameLower, nameLower) or v.Name == name then
-                local moneyVal = "Secret/Fuse"
-                local ownerName = "Server"
+local function checkCurrentServer()
+    for _, v in ipairs(Workspace:GetDescendants()) do
+        for name, isWhitelisted in pairs(WhitelistData) do
+            if isWhitelisted and string.lower(v.Name) == string.lower(name) then
                 local targetCFrame = nil
-
                 if v:IsA("BasePart") then
                     targetCFrame = v.CFrame
                 elseif v:IsA("Model") then
-                    if v.PrimaryPart then
-                        targetCFrame = v.PrimaryPart.CFrame
-                    else
-                        local p = v:FindFirstChildWhichIsA("BasePart")
-                        if p then targetCFrame = p.CFrame end
-                    end
+                    targetCFrame = v.PrimaryPart and v.PrimaryPart.CFrame or (v:FindFirstChildWhichIsA("BasePart") and v:FindFirstChildWhichIsA("BasePart").CFrame)
                 end
 
-                local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
-                if valObj then moneyVal = tostring(valObj.Value) end
-
-                local ownerObj = v:FindFirstChild("Owner") or (v.Parent and v.Parent:FindFirstChild("Owner"))
-                if ownerObj then ownerName = tostring(ownerObj.Value) end
-
                 if targetCFrame then
-                    notifyUser(v.Name, moneyVal, ownerName, targetCFrame)
+                    foundTargetInServer = true
+                    StatusLabel.Text = "TARGET FOUND: " .. v.Name
+                    StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
+
+                    -- Instant Teleport to the item in this server
+                    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                    if char and char:FindFirstChild("HumanoidRootPart") then
+                        char.HumanoidRootPart.Velocity = Vector3.zero
+                        char.HumanoidRootPart.CFrame = targetCFrame * CFrame.new(0, 3, 0)
+                    end
+                    return
                 end
             end
         end
     end
 end
 
-task.spawn(function()
-    for _, v in ipairs(Workspace:GetDescendants()) do
-        checkObject(v)
-    end
-end)
+-- Scan immediately on load
+checkCurrentServer()
 
-Workspace.DescendantAdded:Connect(function(v)
-    task.spawn(checkObject, v)
-end)
+-- If no rare item is in this server, hop to another public server after 3 seconds
+if not foundTargetInServer then
+    task.delay(3, function()
+        serverHop()
+    end)
+end
