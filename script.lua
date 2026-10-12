@@ -1,8 +1,9 @@
--- WNotifier Fixed Engine (Smooth UI + Strict Whitelist + Clean Teleport)
+-- WNotifier Ultra Engine (Workspace Finder + High Performance)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
+local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
 if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
@@ -18,7 +19,9 @@ local WhitelistData = {
     ["Spyder Elephant"] = true,
     ["Arcadragon"] = true,
     ["Griffin"] = true,
-    ["Garama and Madundung"] = true
+    ["Garama and Madundung"] = true,
+    ["Dragon Skeletonini"] = true,
+    ["Brainrot"] = true
 }
 
 local AutoJoinEnabled = true
@@ -50,7 +53,7 @@ TopWindow.BorderSizePixel = 0
 TopWindow.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
-Title.Text = "🟢 WNotifier (Private Engine)"
+Title.Text = "🟢 WNotifier ULTRA Finder"
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 13
 Title.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -61,7 +64,7 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
 
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Text = "Reading Server (10s)..."
+StatusLabel.Text = "Scanning Server..."
 StatusLabel.Font = Enum.Font.SourceSans
 StatusLabel.TextSize = 12
 StatusLabel.TextColor3 = Color3.fromRGB(241, 196, 15)
@@ -210,12 +213,10 @@ for name, status in pairs(WhitelistData) do
 end
 WhitelistScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutWL.AbsoluteContentSize.Y + 10)
 
-local function teleportToPlayer(targetPlayer)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        if myChar and myChar:FindFirstChild("HumanoidRootPart") then
-            myChar.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-        end
+local function teleportToPosition(cframe)
+    local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+        myChar.HumanoidRootPart.CFrame = cframe * CFrame.new(0, 0, 3)
     end
 end
 
@@ -245,7 +246,7 @@ end
 
 local loggedEntries = {}
 
-local function addLogEntry(brainrotName, valStr, playerName, targetPlayer)
+local function addLogEntry(brainrotName, valStr, playerName, targetCFrame)
     local key = playerName .. "_" .. brainrotName
     if loggedEntries[key] then return end
     loggedEntries[key] = true
@@ -272,6 +273,76 @@ local function addLogEntry(brainrotName, valStr, playerName, targetPlayer)
     JoinBtn.Position = UDim2.new(1, -65, 0, 4)
     JoinBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
     JoinBtn.Font = Enum.Font.SourceSansBold
+    JoinBtn.TextSize = 10
+    JoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    JoinBtn.Text = "JOINING..."
+    JoinBtn.Parent = Row
+
+    JoinBtn.MouseButton1Click:Connect(function()
+        if targetCFrame then
+            teleportToPosition(targetCFrame)
+        end
+    end)
+
+    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
+end
+
+-- Full Workspace Scanning Engine (Dex-Finder Style)
+task.spawn(function()
+    for i = 7, 1, -1 do
+        StatusLabel.Text = "Scanning Server (" .. i .. "s)..."
+        
+        -- Scan Workspace Objects / Plots / Models
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            for name, isWhitelisted in pairs(WhitelistData) do
+                if isWhitelisted and (string.find(string.lower(v.Name), string.lower(name)) or v.Name == name) then
+                    local moneyVal = "Rare"
+                    local ownerName = "Unknown"
+                    local targetCFrame = nil
+
+                    if v:IsA("BasePart") then
+                        targetCFrame = v.CFrame
+                    elseif v:IsA("Model") and v.PrimaryPart then
+                        targetCFrame = v.PrimaryPart.CFrame
+                    elseif v:IsA("Model") then
+                        local part = v:FindFirstChildWhichIsA("BasePart")
+                        if part then targetCFrame = part.CFrame end
+                    end
+
+                    -- Try finding money/value
+                    local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
+                    if valObj then
+                        moneyVal = tostring(valObj.Value)
+                    end
+
+                    -- Try finding Owner
+                    local ownerObj = v:FindFirstChild("Owner") or v.Parent:FindFirstChild("Owner")
+                    if ownerObj then
+                        ownerName = tostring(ownerObj.Value)
+                    end
+
+                    if targetCFrame then
+                        FoundRareInServer = true
+                        addLogEntry(v.Name, moneyVal, ownerName, targetCFrame)
+                        if AutoJoinEnabled then
+                            StatusLabel.Text = "Joining Target..."
+                            StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
+                            teleportToPosition(targetCFrame)
+                        end
+                    end
+                end
+            end
+        end
+        task.wait(1)
+    end
+
+    if not FoundRareInServer then
+        StatusLabel.Text = "No Rares -> Hopping..."
+        task.wait(0.5)
+        serverHop()
+    end
+end)
+= Enum.Font.SourceSansBold
     JoinBtn.TextSize = 10
     JoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     JoinBtn.Text = "JOINING..."
