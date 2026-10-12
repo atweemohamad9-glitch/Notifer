@@ -1,4 +1,4 @@
--- WNotifier Ultra Engine (Workspace Finder + High Performance)
+-- WNotifier Ultra Finder (Fixed Syntax & Optimized Scanning)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
@@ -6,6 +6,7 @@ local HttpService = game:GetService("HttpService")
 local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
+-- Clean previous GUI if exists
 if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
     CoreGui.WNotifierPrivateEngine:Destroy()
 end
@@ -287,12 +288,11 @@ local function addLogEntry(brainrotName, valStr, playerName, targetCFrame)
     LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
 end
 
--- Full Workspace Scanning Engine (Dex-Finder Style)
+-- Full Workspace Scanning Engine
 task.spawn(function()
     for i = 7, 1, -1 do
         StatusLabel.Text = "Scanning Server (" .. i .. "s)..."
         
-        -- Scan Workspace Objects / Plots / Models
         for _, v in ipairs(Workspace:GetDescendants()) do
             for name, isWhitelisted in pairs(WhitelistData) do
                 if isWhitelisted and (string.find(string.lower(v.Name), string.lower(name)) or v.Name == name) then
@@ -309,14 +309,12 @@ task.spawn(function()
                         if part then targetCFrame = part.CFrame end
                     end
 
-                    -- Try finding money/value
                     local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
                     if valObj then
                         moneyVal = tostring(valObj.Value)
                     end
 
-                    -- Try finding Owner
-                    local ownerObj = v:FindFirstChild("Owner") or v.Parent:FindFirstChild("Owner")
+                    local ownerObj = v:FindFirstChild("Owner") or (v.Parent and v.Parent:FindFirstChild("Owner"))
                     if ownerObj then
                         ownerName = tostring(ownerObj.Value)
                     end
@@ -339,60 +337,6 @@ task.spawn(function()
     if not FoundRareInServer then
         StatusLabel.Text = "No Rares -> Hopping..."
         task.wait(0.5)
-        serverHop()
-    end
-end)
-= Enum.Font.SourceSansBold
-    JoinBtn.TextSize = 10
-    JoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    JoinBtn.Text = "JOINING..."
-    JoinBtn.Parent = Row
-
-    JoinBtn.MouseButton1Click:Connect(function()
-        teleportToPlayer(targetPlayer)
-    end)
-
-    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
-end
-
--- فحص دقيق وخاص بالوايت ليست فقط
-task.spawn(function()
-    for i = 10, 1, -1 do
-        StatusLabel.Text = "Reading Server (" .. i .. "s)..."
-        
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p ~= LocalPlayer then
-                if p.Character then
-                    for _, obj in ipairs(p.Character:GetDescendants()) do
-                        -- التأكد حصرياً أن الغرض موجود بالوايت ليست ومفعل
-                        if WhitelistData[obj.Name] == true then
-                            local moneyVal = "Secret"
-                            if obj:FindFirstChild("Value") then
-                                moneyVal = tostring(obj.Value.Value)
-                            elseif obj:FindFirstChild("Money") then
-                                moneyVal = tostring(obj.Money.Value)
-                            end
-                            
-                            FoundRareInServer = true
-                            addLogEntry(obj.Name, moneyVal, p.Name, p)
-                            
-                            if AutoJoinEnabled then
-                                StatusLabel.Text = "Joining Target..."
-                                StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
-                                teleportToPlayer(p)
-                            end
-                        end
-                    end
-                end
-            end
-        end
-        
-        task.wait(1)
-    end
-
-    if not FoundRareInServer then
-        StatusLabel.Text = "No Rares -> Hopping..."
-        task.wait(1)
         serverHop()
     end
 end)
