@@ -1,16 +1,16 @@
--- WNotifier One-Shot Cross-Server Steal Sniper (Pure English)
+-- Ches get sniped - 100% Buffed Steal Engine (Pure English)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local SoundService = game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
 
-if CoreGui:FindFirstChild("WNotifierPrivateEngine") then
-    CoreGui.WNotifierPrivateEngine:Destroy()
+if CoreGui:FindFirstChild("ChesGetSnipedEngine") then
+    CoreGui.ChesGetSnipedEngine:Destroy()
 end
+
+local AutoTPEnabled = true
 
 local WhitelistData = {
     -- Rare Secrets & Fuse Targets
@@ -44,22 +44,22 @@ local WhitelistData = {
     ["Pizza And Ranch"] = true,
 
     -- OG Classics
+    ["Meowl"] = true,
     ["Headless Horseman"] = true,
     ["John Pork"] = true,
-    ["Meowl"] = true,
     ["Skibidi Toilet"] = true,
     ["Strawberry Elephant"] = true,
     ["Spyder Elephant"] = true
 }
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "WNotifierPrivateEngine"
+ScreenGui.Name = "ChesGetSnipedEngine"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 500, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -130)
+MainFrame.Size = UDim2.new(0, 520, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -140)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 20, 26)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -71,36 +71,51 @@ MainCorner.CornerRadius = UDim.new(0, 8)
 MainCorner.Parent = MainFrame
 
 local TopWindow = Instance.new("Frame")
-TopWindow.Size = UDim2.new(1, 0, 0, 30)
+TopWindow.Size = UDim2.new(1, 0, 0, 35)
 TopWindow.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
 TopWindow.BorderSizePixel = 0
 TopWindow.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
-Title.Text = "⚡ WNotifier ONE-SHOT STEAL SNIPER"
+Title.Text = "⚡ CHES GET SNIPED [100% BUFF]"
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 13
 Title.TextColor3 = Color3.fromRGB(46, 204, 113)
 Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Size = UDim2.new(0, 310, 1, 0)
+Title.Size = UDim2.new(0, 260, 1, 0)
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
 
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Text = "Searching Public Servers..."
-StatusLabel.Font = Enum.Font.SourceSans
-StatusLabel.TextSize = 11
-StatusLabel.TextColor3 = Color3.fromRGB(241, 196, 15)
-StatusLabel.Position = UDim2.new(1, -210, 0, 0)
-StatusLabel.Size = UDim2.new(0, 200, 1, 0)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.TextXAlignment = Enum.TextXAlignment.Right
-StatusLabel.Parent = TopWindow
+-- Toggle Button (AUTO TP: ON / OFF)
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(0, 95, 0, 24)
+ToggleBtn.Position = UDim2.new(1, -105, 0, 5)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+ToggleBtn.Font = Enum.Font.SourceSansBold
+ToggleBtn.TextSize = 11
+ToggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+ToggleBtn.Text = "AUTO TP: ON"
+ToggleBtn.Parent = TopWindow
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 4)
+ToggleCorner.Parent = ToggleBtn
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    AutoTPEnabled = not AutoTPEnabled
+    if AutoTPEnabled then
+        ToggleBtn.Text = "AUTO TP: ON"
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+    else
+        ToggleBtn.Text = "AUTO TP: OFF"
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+    end
+end)
 
 local LogsScroll = Instance.new("ScrollingFrame")
-LogsScroll.Size = UDim2.new(1, -10, 1, -40)
-LogsScroll.Position = UDim2.new(0, 5, 0, 35)
+LogsScroll.Size = UDim2.new(1, -10, 1, -45)
+LogsScroll.Position = UDim2.new(0, 5, 0, 40)
 LogsScroll.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
 LogsScroll.BorderSizePixel = 0
 LogsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -109,126 +124,135 @@ LogsScroll.Parent = MainFrame
 
 local ListLayoutLogs = Instance.new("UIListLayout")
 ListLayoutLogs.SortOrder = Enum.SortOrder.LayoutOrder
-ListLayoutLogs.Padding = UDim.new(0, 3)
+ListLayoutLogs.Padding = UDim.new(0, 4)
 ListLayoutLogs.Parent = LogsScroll
 
 local function playAlertSound()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590662766"
-    sound.Volume = 2
+    sound.Volume = 25
     sound.Parent = SoundService
     sound:Play()
     sound.Ended:Connect(function() sound:Destroy() end)
 end
 
--- Server Hopper Function
-local function serverHop()
-    StatusLabel.Text = "No Target -> Hopping..."
-    StatusLabel.TextColor3 = Color3.fromRGB(231, 76, 60)
-    
-    local placeId = game.PlaceId
-    local servers = {}
-    local req = request or http_request or (syn and syn.request)
-    
-    if req then
-        local success, res = pcall(function()
-            return req({Url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"})
-        end)
-        if success and res and res.Body then
-            local body = HttpService:JSONDecode(res.Body)
-            if body and body.data then
-                for _, s in ipairs(body.data) do
-                    if s.id ~= game.JobId and s.playing < s.maxPlayers then
-                        table.insert(servers, s.id)
-                    end
-                end
-            end
-        end
-    end
-
-    if #servers > 0 then
-        TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1, #servers)], LocalPlayer)
-    else
-        TeleportService:Teleport(placeId, LocalPlayer)
+local function performTeleport(cframe)
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp and cframe then
+        hrp.Velocity = Vector3.zero
+        hrp.CFrame = cframe * CFrame.new(0, 3, 2)
     end
 end
 
-local targetFound = false
+local loggedKeys = {}
 
-local function scanCurrentServer()
-    if targetFound then return false end
+local function addLogAndTeleport(brainrotName, ownerUser, priceVal, targetCFrame)
+    local key = ownerUser .. "_" .. brainrotName
+    if loggedKeys[key] then return end
+    loggedKeys[key] = true
 
-    -- 1. Check Workspace items
-    for _, v in ipairs(Workspace:GetDescendants()) do
-        for name, isWhitelisted in pairs(WhitelistData) do
-            if isWhitelisted and string.lower(v.Name) == string.lower(name) then
-                targetFound = true
-                playAlertSound()
-                StatusLabel.Text = "SNIPED ITEM!"
-                StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
-                
-                local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                local targetCFrame = nil
-                if v:IsA("BasePart") then
-                    targetCFrame = v.CFrame
-                elseif v:IsA("Model") then
-                    targetCFrame = v.PrimaryPart and v.PrimaryPart.CFrame or (v:FindFirstChildWhichIsA("BasePart") and v:FindFirstChildWhichIsA("BasePart").CFrame)
-                end
-                if hrp and targetCFrame then
-                    hrp.Velocity = Vector3.zero
-                    hrp.CFrame = targetCFrame * CFrame.new(0, 3, 0)
-                end
-                return true
+    playAlertSound()
+
+    if AutoTPEnabled and targetCFrame then
+        performTeleport(targetCFrame)
+    end
+
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "🎯 CHES SNIPED TARGET!",
+            Text = brainrotName .. " | Owner: " .. ownerUser .. " | " .. priceVal,
+            Duration = 6
+        })
+    end)
+
+    local Row = Instance.new("Frame")
+    Row.Size = UDim2.new(1, 0, 0, 32)
+    Row.BackgroundColor3 = Color3.fromRGB(24, 28, 38)
+    Row.BorderSizePixel = 0
+    Row.Parent = LogsScroll
+
+    local InfoLbl = Instance.new("TextLabel")
+    InfoLbl.Size = UDim2.new(1, -80, 1, 0)
+    InfoLbl.Position = UDim2.new(0, 8, 0, 0)
+    InfoLbl.BackgroundTransparency = 1
+    InfoLbl.Font = Enum.Font.SourceSansBold
+    InfoLbl.TextSize = 11
+    InfoLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    InfoLbl.TextXAlignment = Enum.TextXAlignment.Left
+    InfoLbl.Text = "🔥 " .. brainrotName .. " | @" .. ownerUser .. " | " .. priceVal
+    InfoLbl.Parent = Row
+
+    local TPBtn = Instance.new("TextButton")
+    TPBtn.Size = UDim2.new(0, 68, 0, 24)
+    TPBtn.Position = UDim2.new(1, -73, 0, 4)
+    TPBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+    TPBtn.Font = Enum.Font.SourceSansBold
+    TPBtn.TextSize = 10
+    TPBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TPBtn.Text = "RE-TP"
+    TPBtn.Parent = Row
+
+    TPBtn.MouseButton1Click:Connect(function()
+        if targetCFrame then performTeleport(targetCFrame) end
+    end)
+
+    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
+end
+
+local function scanObject(v)
+    for name, isWhitelisted in pairs(WhitelistData) do
+        if isWhitelisted and string.lower(v.Name) == string.lower(name) then
+            local priceVal = "Value: Rare"
+            local ownerUser = "Server"
+            local targetCFrame = nil
+
+            if v:IsA("BasePart") then
+                targetCFrame = v.CFrame
+            elseif v:IsA("Model") then
+                targetCFrame = v.PrimaryPart and v.PrimaryPart.CFrame or (v:FindFirstChildWhichIsA("BasePart") and v:FindFirstChildWhichIsA("BasePart").CFrame)
+            end
+
+            local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
+            if valObj then priceVal = "$" .. tostring(valObj.Value) end
+
+            local ownerObj = v:FindFirstChild("Owner") or (v.Parent and v.Parent:FindFirstChild("Owner"))
+            if ownerObj then ownerUser = tostring(ownerObj.Value) end
+
+            if targetCFrame then
+                addLogAndTeleport(v.Name, ownerUser, priceVal, targetCFrame)
             end
         end
     end
+end
 
-    -- 2. Check Players Inventory/Character
+local function scanPlayers()
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
             local function checkContainer(cont)
-                if not cont then return false end
+                if not cont then return end
                 for _, item in ipairs(cont:GetDescendants()) do
                     for name, isWhitelisted in pairs(WhitelistData) do
                         if isWhitelisted and string.lower(item.Name) == string.lower(name) then
-                            targetFound = true
-                            playAlertSound()
-                            StatusLabel.Text = "SNIPED PLAYER: " .. plr.Name
-                            StatusLabel.TextColor3 = Color3.fromRGB(46, 204, 113)
-
-                            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-                            local hrp = char:FindFirstChild("HumanoidRootPart")
-                            if hrp and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                                hrp.Velocity = Vector3.zero
-                                hrp.CFrame = plr.Character.HumanoidRootPart.CFrame * CFrame.new(0, 3, 3)
+                            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                                addLogAndTeleport(item.Name, plr.Name, "In Inventory", plr.Character.HumanoidRootPart.CFrame)
                             end
-                            return true
                         end
                     end
                 end
-                return false
             end
-
-            if plr.Character and checkContainer(plr.Character) then return true end
-            if plr.Backpack and checkContainer(plr.Backpack) then return true end
+            if plr.Character then checkContainer(plr.Character) end
+            if plr.Backpack then checkContainer(plr.Backpack) end
         end
     end
-
-    return false
 end
 
--- Run scan once when entering a server
+-- Buffed Fast Loop (0.1s)
 task.spawn(function()
-    task.wait(1.5)
-    local found = scanCurrentServer()
-    
-    -- If no target is found, wait 3 seconds then hop to the next public server ONCE
-    if not found then
-        task.delay(3, function()
-            if not targetFound then
-                serverHop()
-            end
-        end)
+    while task.wait(0.1) do
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            scanObject(v)
+        end
+        scanPlayers()
     end
 end)
