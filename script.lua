@@ -1,4 +1,4 @@
--- WNotifier Ultimate Engine (Full UI + WL Toggle + Detailed Logs)
+-- WNotifier Fixed Engine (Smooth UI + Strict Whitelist + Clean Teleport)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
@@ -174,7 +174,6 @@ for i, cat in ipairs(categories) do
     Btn.MouseButton1Click:Connect(function() switchTab(cat) end)
 end
 
--- بناء قائمة Whitelist مع أزرار ON / OFF
 for name, status in pairs(WhitelistData) do
     local Entry = Instance.new("Frame")
     Entry.Size = UDim2.new(1, -6, 0, 28)
@@ -285,7 +284,7 @@ local function addLogEntry(brainrotName, valStr, playerName, targetPlayer)
     LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
 end
 
--- محرك الفحص المتطور
+-- فحص دقيق وخاص بالوايت ليست فقط
 task.spawn(function()
     for i = 10, 1, -1 do
         StatusLabel.Text = "Reading Server (" .. i .. "s)..."
@@ -294,8 +293,9 @@ task.spawn(function()
             if p ~= LocalPlayer then
                 if p.Character then
                     for _, obj in ipairs(p.Character:GetDescendants()) do
+                        -- التأكد حصرياً أن الغرض موجود بالوايت ليست ومفعل
                         if WhitelistData[obj.Name] == true then
-                            local moneyVal = "Rare Item"
+                            local moneyVal = "Secret"
                             if obj:FindFirstChild("Value") then
                                 moneyVal = tostring(obj.Value.Value)
                             elseif obj:FindFirstChild("Money") then
