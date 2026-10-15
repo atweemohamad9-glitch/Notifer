@@ -1,4 +1,4 @@
--- Ches get sniped - 100% Buffed Steal Engine (Pure English)
+-- CHES GET SNIPED - ULTIMATE BUG-FREE ENGINE
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -13,7 +13,7 @@ end
 local AutoTPEnabled = true
 
 local WhitelistData = {
-    -- Rare Secrets & Fuse Targets
+    -- Secrets & Rare Fuses
     ["Garama and Madundung"] = true,
     ["Garama"] = true,
     ["Madundung"] = true,
@@ -24,7 +24,7 @@ local WhitelistData = {
     ["Arcadragon"] = true,
     ["Griffin"] = true,
 
-    -- DLC & Code Exclusives
+    -- DLCs & Codes
     ["Pineaplino"] = true,
     ["Lazy Ducky"] = true,
     ["Tenini Ballini"] = true,
@@ -52,54 +52,63 @@ local WhitelistData = {
     ["Spyder Elephant"] = true
 }
 
+-- UI Setup
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ChesGetSnipedEngine"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 520, 0, 280)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -140)
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 20, 26)
+MainFrame.Size = UDim2.new(0, 520, 0, 290)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -145)
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 22, 30)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.CornerRadius = UDim.new(0, 10)
 MainCorner.Parent = MainFrame
 
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Thickness = 2
+MainStroke.Color = Color3.fromRGB(46, 204, 113)
+MainStroke.Parent = MainFrame
+
 local TopWindow = Instance.new("Frame")
-TopWindow.Size = UDim2.new(1, 0, 0, 35)
-TopWindow.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+TopWindow.Size = UDim2.new(1, 0, 0, 40)
+TopWindow.BackgroundColor3 = Color3.fromRGB(12, 15, 22)
 TopWindow.BorderSizePixel = 0
 TopWindow.Parent = MainFrame
 
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 10)
+TopCorner.Parent = TopWindow
+
 local Title = Instance.new("TextLabel")
-Title.Text = "⚡ CHES GET SNIPED [100% BUFF]"
-Title.Font = Enum.Font.SourceSansBold
+Title.Text = "🎯 CHES GET SNIPED [ULTRA PRO]"
+Title.Font = Enum.Font.GothamBold
 Title.TextSize = 13
 Title.TextColor3 = Color3.fromRGB(46, 204, 113)
-Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
 Title.Size = UDim2.new(0, 260, 1, 0)
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
 
--- Toggle Button (AUTO TP: ON / OFF)
 local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Size = UDim2.new(0, 95, 0, 24)
-ToggleBtn.Position = UDim2.new(1, -105, 0, 5)
+ToggleBtn.Size = UDim2.new(0, 110, 0, 28)
+ToggleBtn.Position = UDim2.new(1, -120, 0, 6)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
-ToggleBtn.Font = Enum.Font.SourceSansBold
+ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 11
-ToggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+ToggleBtn.TextColor3 = Color3.fromRGB(12, 15, 22)
 ToggleBtn.Text = "AUTO TP: ON"
 ToggleBtn.Parent = TopWindow
 
 local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 4)
+ToggleCorner.CornerRadius = UDim.new(0, 6)
 ToggleCorner.Parent = ToggleBtn
 
 ToggleBtn.MouseButton1Click:Connect(function()
@@ -114,119 +123,132 @@ ToggleBtn.MouseButton1Click:Connect(function()
 end)
 
 local LogsScroll = Instance.new("ScrollingFrame")
-LogsScroll.Size = UDim2.new(1, -10, 1, -45)
-LogsScroll.Position = UDim2.new(0, 5, 0, 40)
-LogsScroll.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
+LogsScroll.Size = UDim2.new(1, -16, 1, -54)
+LogsScroll.Position = UDim2.new(0, 8, 0, 46)
+LogsScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
 LogsScroll.BorderSizePixel = 0
 LogsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-LogsScroll.ScrollBarThickness = 3
+LogsScroll.ScrollBarThickness = 4
 LogsScroll.Parent = MainFrame
 
-local ListLayoutLogs = Instance.new("UIListLayout")
-ListLayoutLogs.SortOrder = Enum.SortOrder.LayoutOrder
-ListLayoutLogs.Padding = UDim.new(0, 4)
-ListLayoutLogs.Parent = LogsScroll
+local LogsCorner = Instance.new("UICorner")
+LogsCorner.CornerRadius = UDim.new(0, 6)
+LogsCorner.Parent = LogsScroll
 
-local function playAlertSound()
+local ListLayout = Instance.new("UIListLayout")
+ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ListLayout.Padding = UDim.new(0, 5)
+ListLayout.Parent = LogsScroll
+
+local function playSound()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590662766"
-    sound.Volume = 25
+    sound.Volume = 4
     sound.Parent = SoundService
     sound:Play()
     sound.Ended:Connect(function() sound:Destroy() end)
 end
 
-local function performTeleport(cframe)
+local function performTP(cframe)
+    if not cframe then return end
     local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    if hrp and cframe then
+    if hrp then
         hrp.Velocity = Vector3.zero
-        hrp.CFrame = cframe * CFrame.new(0, 3, 2)
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.CFrame = cframe * CFrame.new(0, 2, 2)
     end
 end
 
-local loggedKeys = {}
+local detectedTargets = {}
 
-local function addLogAndTeleport(brainrotName, ownerUser, priceVal, targetCFrame)
+local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
     local key = ownerUser .. "_" .. brainrotName
-    if loggedKeys[key] then return end
-    loggedKeys[key] = true
+    if detectedTargets[key] then return end
+    detectedTargets[key] = true
 
-    playAlertSound()
+    playSound()
 
     if AutoTPEnabled and targetCFrame then
-        performTeleport(targetCFrame)
+        performTP(targetCFrame)
     end
 
     pcall(function()
         StarterGui:SetCore("SendNotification", {
-            Title = "🎯 CHES SNIPED TARGET!",
-            Text = brainrotName .. " | Owner: " .. ownerUser .. " | " .. priceVal,
-            Duration = 6
+            Title = "🎯 TARGET SNIPED!",
+            Text = brainrotName .. " | @" .. ownerUser .. " | " .. priceVal,
+            Duration = 5
         })
     end)
 
     local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1, 0, 0, 32)
-    Row.BackgroundColor3 = Color3.fromRGB(24, 28, 38)
+    Row.Size = UDim2.new(1, -6, 0, 36)
+    Row.BackgroundColor3 = Color3.fromRGB(24, 29, 40)
     Row.BorderSizePixel = 0
     Row.Parent = LogsScroll
 
+    local RowCorner = Instance.new("UICorner")
+    RowCorner.CornerRadius = UDim.new(0, 6)
+    RowCorner.Parent = Row
+
     local InfoLbl = Instance.new("TextLabel")
-    InfoLbl.Size = UDim2.new(1, -80, 1, 0)
-    InfoLbl.Position = UDim2.new(0, 8, 0, 0)
+    InfoLbl.Size = UDim2.new(1, -85, 1, 0)
+    InfoLbl.Position = UDim2.new(0, 10, 0, 0)
     InfoLbl.BackgroundTransparency = 1
-    InfoLbl.Font = Enum.Font.SourceSansBold
+    InfoLbl.Font = Enum.Font.GothamMedium
     InfoLbl.TextSize = 11
-    InfoLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    InfoLbl.TextColor3 = Color3.fromRGB(240, 240, 240)
     InfoLbl.TextXAlignment = Enum.TextXAlignment.Left
-    InfoLbl.Text = "🔥 " .. brainrotName .. " | @" .. ownerUser .. " | " .. priceVal
+    InfoLbl.Text = "🔥 " .. brainrotName .. "  |  User: @" .. ownerUser .. "  |  " .. priceVal
     InfoLbl.Parent = Row
 
     local TPBtn = Instance.new("TextButton")
-    TPBtn.Size = UDim2.new(0, 68, 0, 24)
-    TPBtn.Position = UDim2.new(1, -73, 0, 4)
+    TPBtn.Size = UDim2.new(0, 70, 0, 26)
+    TPBtn.Position = UDim2.new(1, -76, 0, 5)
     TPBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
-    TPBtn.Font = Enum.Font.SourceSansBold
+    TPBtn.Font = Enum.Font.GothamBold
     TPBtn.TextSize = 10
-    TPBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TPBtn.TextColor3 = Color3.fromRGB(12, 15, 22)
     TPBtn.Text = "RE-TP"
     TPBtn.Parent = Row
 
+    local TPBtnCorner = Instance.new("UICorner")
+    TPBtnCorner.CornerRadius = UDim.new(0, 5)
+    TPBtnCorner.Parent = TPBtn
+
     TPBtn.MouseButton1Click:Connect(function()
-        if targetCFrame then performTeleport(targetCFrame) end
+        if targetCFrame then performTP(targetCFrame) end
     end)
 
-    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayoutLogs.AbsoluteContentSize.Y + 10)
+    LogsScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 10)
 end
 
-local function scanObject(v)
-    for name, isWhitelisted in pairs(WhitelistData) do
-        if isWhitelisted and string.lower(v.Name) == string.lower(name) then
-            local priceVal = "Value: Rare"
-            local ownerUser = "Server"
-            local targetCFrame = nil
+local function scanAll()
+    for _, v in ipairs(Workspace:GetDescendants()) do
+        for name, isWhitelisted in pairs(WhitelistData) do
+            if isWhitelisted and string.lower(v.Name) == string.lower(name) then
+                local targetCFrame = nil
+                if v:IsA("BasePart") then
+                    targetCFrame = v.CFrame
+                elseif v:IsA("Model") then
+                    targetCFrame = v.PrimaryPart and v.PrimaryPart.CFrame or (v:FindFirstChildWhichIsA("BasePart") and v:FindFirstChildWhichIsA("BasePart").CFrame)
+                end
 
-            if v:IsA("BasePart") then
-                targetCFrame = v.CFrame
-            elseif v:IsA("Model") then
-                targetCFrame = v.PrimaryPart and v.PrimaryPart.CFrame or (v:FindFirstChildWhichIsA("BasePart") and v:FindFirstChildWhichIsA("BasePart").CFrame)
-            end
+                local priceVal = "Rare Item"
+                local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
+                if valObj then priceVal = "$" .. tostring(valObj.Value) end
 
-            local valObj = v:FindFirstChild("Value") or v:FindFirstChild("Money") or v:FindFirstChild("Price")
-            if valObj then priceVal = "$" .. tostring(valObj.Value) end
+                local ownerUser = "Server Ground"
+                local ownerObj = v:FindFirstChild("Owner") or (v.Parent and v.Parent:FindFirstChild("Owner"))
+                if ownerObj then ownerUser = tostring(ownerObj.Value) end
 
-            local ownerObj = v:FindFirstChild("Owner") or (v.Parent and v.Parent:FindFirstChild("Owner"))
-            if ownerObj then ownerUser = tostring(ownerObj.Value) end
-
-            if targetCFrame then
-                addLogAndTeleport(v.Name, ownerUser, priceVal, targetCFrame)
+                if targetCFrame then
+                    addTargetLog(v.Name, ownerUser, priceVal, targetCFrame)
+                end
             end
         end
     end
-end
 
-local function scanPlayers()
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
             local function checkContainer(cont)
@@ -235,7 +257,7 @@ local function scanPlayers()
                     for name, isWhitelisted in pairs(WhitelistData) do
                         if isWhitelisted and string.lower(item.Name) == string.lower(name) then
                             if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                                addLogAndTeleport(item.Name, plr.Name, "In Inventory", plr.Character.HumanoidRootPart.CFrame)
+                                addTargetLog(item.Name, plr.Name, "In Inventory", plr.Character.HumanoidRootPart.CFrame)
                             end
                         end
                     end
@@ -247,12 +269,9 @@ local function scanPlayers()
     end
 end
 
--- Buffed Fast Loop (0.1s)
+-- Fast Loop Execution
 task.spawn(function()
-    while task.wait(0.1) do
-        for _, v in ipairs(Workspace:GetDescendants()) do
-            scanObject(v)
-        end
-        scanPlayers()
+    while task.wait(0.05) do
+        scanAll()
     end
 end)
