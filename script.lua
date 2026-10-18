@@ -1,4 +1,4 @@
--- CHES GET SNIPED - ULTIMATE BUG-FREE ENGINE
+-- CHES GET SNIPED - CRYSTAL EDITION
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -11,6 +11,7 @@ if CoreGui:FindFirstChild("ChesGetSnipedEngine") then
 end
 
 local AutoTPEnabled = true
+local TargetsCount = 0
 
 local WhitelistData = {
     -- Secrets & Rare Fuses
@@ -52,58 +53,72 @@ local WhitelistData = {
     ["Spyder Elephant"] = true
 }
 
--- UI Setup
+-- UI Setup (Crystal Theme)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ChesGetSnipedEngine"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 520, 0, 290)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -145)
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 22, 30)
+MainFrame.Size = UDim2.new(0, 520, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 26)
+MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Thickness = 2
-MainStroke.Color = Color3.fromRGB(46, 204, 113)
+MainStroke.Color = Color3.fromRGB(0, 242, 254)
+MainStroke.Transparency = 0.2
 MainStroke.Parent = MainFrame
 
 local TopWindow = Instance.new("Frame")
-TopWindow.Size = UDim2.new(1, 0, 0, 40)
-TopWindow.BackgroundColor3 = Color3.fromRGB(12, 15, 22)
+TopWindow.Size = UDim2.new(1, 0, 0, 42)
+TopWindow.BackgroundColor3 = Color3.fromRGB(5, 10, 20)
+TopWindow.BackgroundTransparency = 0.3
 TopWindow.BorderSizePixel = 0
 TopWindow.Parent = MainFrame
 
 local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 10)
+TopCorner.CornerRadius = UDim.new(0, 12)
 TopCorner.Parent = TopWindow
 
 local Title = Instance.new("TextLabel")
-Title.Text = "🎯 CHES GET SNIPED [ULTRA PRO]"
+Title.Text = "💎 CHES GET SNIPED"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 13
-Title.TextColor3 = Color3.fromRGB(46, 204, 113)
+Title.TextSize = 14
+Title.TextColor3 = Color3.fromRGB(0, 242, 254)
 Title.Position = UDim2.new(0, 12, 0, 0)
-Title.Size = UDim2.new(0, 260, 1, 0)
+Title.Size = UDim2.new(0, 200, 1, 0)
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
 
+local CounterLabel = Instance.new("TextLabel")
+CounterLabel.Text = "💎 TARGETS: 0"
+CounterLabel.Font = Enum.Font.GothamMedium
+CounterLabel.TextSize = 11
+CounterLabel.TextColor3 = Color3.fromRGB(180, 235, 255)
+CounterLabel.Position = UDim2.new(0, 210, 0, 0)
+CounterLabel.Size = UDim2.new(0, 100, 1, 0)
+CounterLabel.BackgroundTransparency = 1
+CounterLabel.TextXAlignment = Enum.TextXAlignment.Left
+CounterLabel.Parent = TopWindow
+
 local ToggleBtn = Instance.new("TextButton")
 ToggleBtn.Size = UDim2.new(0, 110, 0, 28)
-ToggleBtn.Position = UDim2.new(1, -120, 0, 6)
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+ToggleBtn.Position = UDim2.new(1, -120, 0, 7)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 242, 254)
 ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 11
-ToggleBtn.TextColor3 = Color3.fromRGB(12, 15, 22)
+ToggleBtn.TextColor3 = Color3.fromRGB(5, 10, 20)
 ToggleBtn.Text = "AUTO TP: ON"
 ToggleBtn.Parent = TopWindow
 
@@ -115,29 +130,30 @@ ToggleBtn.MouseButton1Click:Connect(function()
     AutoTPEnabled = not AutoTPEnabled
     if AutoTPEnabled then
         ToggleBtn.Text = "AUTO TP: ON"
-        ToggleBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 242, 254)
     else
         ToggleBtn.Text = "AUTO TP: OFF"
-        ToggleBtn.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(235, 75, 75)
     end
 end)
 
 local LogsScroll = Instance.new("ScrollingFrame")
-LogsScroll.Size = UDim2.new(1, -16, 1, -54)
-LogsScroll.Position = UDim2.new(0, 8, 0, 46)
-LogsScroll.BackgroundColor3 = Color3.fromRGB(10, 12, 18)
+LogsScroll.Size = UDim2.new(1, -16, 1, -56)
+LogsScroll.Position = UDim2.new(0, 8, 0, 48)
+LogsScroll.BackgroundColor3 = Color3.fromRGB(4, 8, 15)
+LogsScroll.BackgroundTransparency = 0.4
 LogsScroll.BorderSizePixel = 0
 LogsScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-LogsScroll.ScrollBarThickness = 4
+LogsScroll.ScrollBarThickness = 3
 LogsScroll.Parent = MainFrame
 
 local LogsCorner = Instance.new("UICorner")
-LogsCorner.CornerRadius = UDim.new(0, 6)
+LogsCorner.CornerRadius = UDim.new(0, 8)
 LogsCorner.Parent = LogsScroll
 
 local ListLayout = Instance.new("UIListLayout")
 ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-ListLayout.Padding = UDim.new(0, 5)
+ListLayout.Padding = UDim.new(0, 6)
 ListLayout.Parent = LogsScroll
 
 local function playSound()
@@ -167,6 +183,9 @@ local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
     if detectedTargets[key] then return end
     detectedTargets[key] = true
 
+    TargetsCount = TargetsCount + 1
+    CounterLabel.Text = "💎 TARGETS: " .. tostring(TargetsCount)
+
     playSound()
 
     if AutoTPEnabled and targetCFrame then
@@ -175,7 +194,7 @@ local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
 
     pcall(function()
         StarterGui:SetCore("SendNotification", {
-            Title = "🎯 TARGET SNIPED!",
+            Title = "💎 CRYSTAL SNIPE DETECTED!",
             Text = brainrotName .. " | @" .. ownerUser .. " | " .. priceVal,
             Duration = 5
         })
@@ -183,7 +202,8 @@ local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
 
     local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1, -6, 0, 36)
-    Row.BackgroundColor3 = Color3.fromRGB(24, 29, 40)
+    Row.BackgroundColor3 = Color3.fromRGB(15, 25, 40)
+    Row.BackgroundTransparency = 0.3
     Row.BorderSizePixel = 0
     Row.Parent = LogsScroll
 
@@ -191,24 +211,30 @@ local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
     RowCorner.CornerRadius = UDim.new(0, 6)
     RowCorner.Parent = Row
 
+    local RowStroke = Instance.new("UIStroke")
+    RowStroke.Thickness = 1
+    RowStroke.Color = Color3.fromRGB(0, 242, 254)
+    RowStroke.Transparency = 0.6
+    RowStroke.Parent = Row
+
     local InfoLbl = Instance.new("TextLabel")
     InfoLbl.Size = UDim2.new(1, -85, 1, 0)
     InfoLbl.Position = UDim2.new(0, 10, 0, 0)
     InfoLbl.BackgroundTransparency = 1
     InfoLbl.Font = Enum.Font.GothamMedium
     InfoLbl.TextSize = 11
-    InfoLbl.TextColor3 = Color3.fromRGB(240, 240, 240)
+    InfoLbl.TextColor3 = Color3.fromRGB(230, 245, 255)
     InfoLbl.TextXAlignment = Enum.TextXAlignment.Left
-    InfoLbl.Text = "🔥 " .. brainrotName .. "  |  User: @" .. ownerUser .. "  |  " .. priceVal
+    InfoLbl.Text = "✨ " .. brainrotName .. "  |  User: @" .. ownerUser .. "  |  " .. priceVal
     InfoLbl.Parent = Row
 
     local TPBtn = Instance.new("TextButton")
     TPBtn.Size = UDim2.new(0, 70, 0, 26)
     TPBtn.Position = UDim2.new(1, -76, 0, 5)
-    TPBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+    TPBtn.BackgroundColor3 = Color3.fromRGB(0, 242, 254)
     TPBtn.Font = Enum.Font.GothamBold
     TPBtn.TextSize = 10
-    TPBtn.TextColor3 = Color3.fromRGB(12, 15, 22)
+    TPBtn.TextColor3 = Color3.fromRGB(5, 10, 20)
     TPBtn.Text = "RE-TP"
     TPBtn.Parent = Row
 
@@ -269,7 +295,7 @@ local function scanAll()
     end
 end
 
--- Fast Loop Execution
+-- Ultra Fast Crystal Loop (0.05s)
 task.spawn(function()
     while task.wait(0.05) do
         scanAll()
