@@ -1,14 +1,19 @@
--- CHES GET SNIPED - CRYSTAL EDITION
+-- CHES GET SNIPED - CRYSTAL & DISCORD WEBHOOK EDITION
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 local SoundService = game:GetService("SoundService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 
 if CoreGui:FindFirstChild("ChesGetSnipedEngine") then
     CoreGui.ChesGetSnipedEngine:Destroy()
 end
+
+-- 🔗 Discord Webhook Active!
+local DiscordWebhookURL = "https://discord.com/api/webhooks/1561375834366025750/VC95lyAKxrAM_CnlptKNqpvA-n9Wf8Ejy6w7gV3Nwhm7XZZxAIY0CozZkEwoCdLJzGlc" 
 
 local AutoTPEnabled = true
 local TargetsCount = 0
@@ -60,8 +65,8 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = (gethui and gethui()) or CoreGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 520, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -150)
+MainFrame.Size = UDim2.new(0, 520, 0, 310)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -155)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 15, 26)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
@@ -96,7 +101,7 @@ Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
 Title.TextColor3 = Color3.fromRGB(0, 242, 254)
 Title.Position = UDim2.new(0, 12, 0, 0)
-Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Size = UDim2.new(0, 180, 1, 0)
 Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopWindow
@@ -106,18 +111,18 @@ CounterLabel.Text = "💎 TARGETS: 0"
 CounterLabel.Font = Enum.Font.GothamMedium
 CounterLabel.TextSize = 11
 CounterLabel.TextColor3 = Color3.fromRGB(180, 235, 255)
-CounterLabel.Position = UDim2.new(0, 210, 0, 0)
-CounterLabel.Size = UDim2.new(0, 100, 1, 0)
+CounterLabel.Position = UDim2.new(0, 195, 0, 0)
+CounterLabel.Size = UDim2.new(0, 95, 1, 0)
 CounterLabel.BackgroundTransparency = 1
 CounterLabel.TextXAlignment = Enum.TextXAlignment.Left
 CounterLabel.Parent = TopWindow
 
 local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Size = UDim2.new(0, 110, 0, 28)
-ToggleBtn.Position = UDim2.new(1, -120, 0, 7)
+ToggleBtn.Size = UDim2.new(0, 100, 0, 28)
+ToggleBtn.Position = UDim2.new(1, -215, 0, 7)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 242, 254)
 ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 11
+ToggleBtn.TextSize = 10
 ToggleBtn.TextColor3 = Color3.fromRGB(5, 10, 20)
 ToggleBtn.Text = "AUTO TP: ON"
 ToggleBtn.Parent = TopWindow
@@ -136,6 +141,34 @@ ToggleBtn.MouseButton1Click:Connect(function()
         ToggleBtn.BackgroundColor3 = Color3.fromRGB(235, 75, 75)
     end
 end)
+
+-- Server Hop Button
+local HopBtn = Instance.new("TextButton")
+HopBtn.Size = UDim2.new(0, 100, 0, 28)
+HopBtn.Position = UDim2.new(1, -108, 0, 7)
+HopBtn.BackgroundColor3 = Color3.fromRGB(155, 89, 182)
+HopBtn.Font = Enum.Font.GothamBold
+HopBtn.TextSize = 10
+HopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+HopBtn.Text = "SERVER HOP"
+HopBtn.Parent = TopWindow
+
+local HopCorner = Instance.new("UICorner")
+HopCorner.CornerRadius = UDim.new(0, 6)
+HopCorner.Parent = HopBtn
+
+local function serverHop()
+    local PlaceId = game.PlaceId
+    local Servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+    for _, s in ipairs(Servers.data) do
+        if s.playing < s.maxPlayers and s.id ~= game.JobId then
+            TeleportService:TeleportToPlaceInstance(PlaceId, s.id, LocalPlayer)
+            break
+        end
+    end
+end
+
+HopBtn.MouseButton1Click:Connect(serverHop)
 
 local LogsScroll = Instance.new("ScrollingFrame")
 LogsScroll.Size = UDim2.new(1, -16, 1, -56)
@@ -165,6 +198,30 @@ local function playSound()
     sound.Ended:Connect(function() sound:Destroy() end)
 end
 
+local function sendDiscordWebhook(brainrotName, ownerUser, priceVal)
+    if DiscordWebhookURL == "" or not (http_request or request or HttpService.RequestAsync) then return end
+    local reqFunc = http_request or request or HttpService.RequestAsync
+    local payload = HttpService:JSONEncode({
+        ["content"] = "🚨 **CHES GET SNIPED DETECTED TARGET!**",
+        ["embeds"] = {{
+            ["title"] = "🎯 New Rare Brainrot Target!",
+            ["description"] = "**Item:** " .. brainrotName .. "\n**Owner:** @" .. ownerUser .. "\n**Price:** " .. priceVal,
+            ["color"] = 62463,
+            ["fields"] = {
+                { ["name"] = "Server JobID", ["value"] = "```" .. game.JobId .. "```" }
+            }
+        }}
+    })
+    pcall(function()
+        reqFunc({
+            Url = DiscordWebhookURL,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = payload
+        })
+    end)
+end
+
 local function performTP(cframe)
     if not cframe then return end
     local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -187,6 +244,7 @@ local function addTargetLog(brainrotName, ownerUser, priceVal, targetCFrame)
     CounterLabel.Text = "💎 TARGETS: " .. tostring(TargetsCount)
 
     playSound()
+    sendDiscordWebhook(brainrotName, ownerUser, priceVal)
 
     if AutoTPEnabled and targetCFrame then
         performTP(targetCFrame)
@@ -295,7 +353,7 @@ local function scanAll()
     end
 end
 
--- Ultra Fast Crystal Loop (0.05s)
+-- Ultra Fast Loop (0.05s)
 task.spawn(function()
     while task.wait(0.05) do
         scanAll()
